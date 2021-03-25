@@ -46,8 +46,7 @@ int main()
 void* logFromThread(void* arg)
 {
     Logger::MSG_TYPE* threadNum = static_cast<Logger::MSG_TYPE*>(arg);
-    log.printLog(static_cast<Logger::MSG_TYPE>(*threadNum), 
-                    std::string("Thread " + std::to_string(*threadNum) + " writing into log"));
+    log.printLog(*threadNum, std::string("Thread " + std::to_string(*threadNum) + " writing into log"));
     delete threadNum;
 }
 //----------------------------------------------------------------------------------------------
