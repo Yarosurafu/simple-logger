@@ -27,8 +27,8 @@ int main()
         //Logging all types of messages
         for(size_t i = 0; i < Logger::MAX_MSG; ++i)
         {
-            int* arg = new int;
-            *arg = i;
+            Logger::MSG_TYPE* arg = new Logger::MSG_TYPE;
+            *arg = static_cast<Logger::MSG_TYPE>(i);
             pthread_create(&tids[i], nullptr, logFromThread, static_cast<void*>(arg));
         }
         //Sleep of main thread before generating new logs
