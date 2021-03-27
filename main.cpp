@@ -7,34 +7,38 @@
 
 #include "logger.h"
 
-//Object of RAII-class that represents logger
 Logger log;
 
 //-----Func prototypes-----
 void* logFromThread(void* arg);
 int getRandomNumber(int min, int max);
+void codeForProcess();
 //-------------------------
 
 int main()
 {
     srand(static_cast<unsigned int>(time(0)));  //Set seed for rand()
-    pthread_t tids[Logger::MAX_MSG];            //An array for containing thread_id
 
-    //--------------------------------
-    //Cycle of generating log-messages
-    while(true)
+    switch(fork())
     {
-        //Logging all types of messages
-        for(size_t i = 0; i < Logger::MAX_MSG; ++i)
+        case -1:
         {
-            Logger::MSG_TYPE* arg = new Logger::MSG_TYPE;
-            *arg = static_cast<Logger::MSG_TYPE>(i);
-            pthread_create(&tids[i], nullptr, logFromThread, static_cast<void*>(arg));
+            exitErr("fork()");
         }
-        //Sleep of main thread before generating new logs
-        usleep(getRandomNumber(1000, 999999));
-    }
-    //--------------------------------
+        break;
+
+        case 0:
+        {//Code for child process
+            codeForProcess();
+        }
+        break;
+
+        default:
+        {//Code for parent process
+            codeForProcess();
+        }
+        break;
+    }    
 }//END OF MAIN
 
 //----------------------------------------------------------------------------------------------
@@ -45,9 +49,10 @@ int main()
  */
 void* logFromThread(void* arg)
 {
-    Logger::MSG_TYPE* threadNum = static_cast<Logger::MSG_TYPE*>(arg);
-    log.printLog(*threadNum, std::string("Thread " + std::to_string(*threadNum) + " writing into log"));
-    delete threadNum;
+    Logger::MSG_TYPE* messageType = static_cast<Logger::MSG_TYPE*>(arg);
+    std::string message = "Thread " + std::to_string(static_cast<int>(*messageType)) + " writing into log\n";
+    log.printLog(*messageType, message);
+    delete messageType;
 }
 //----------------------------------------------------------------------------------------------
 
@@ -61,3 +66,26 @@ int getRandomNumber(int min, int max)
     return static_cast<int>(rand() * fraction * (max - min + 1) + min);
 }
 //----------------------------------------------------------------------------------------------
+
+void codeForProcess()
+{
+    const int QUANTITY_OF_MSG_TYPES = static_cast<int>(Logger::MSG_TYPE::MAX_MSG);
+    pthread_t tids[QUANTITY_OF_MSG_TYPES];      //An array for containing thread_id
+    
+    //--------------------------------
+    //Cycle of generating log-messages
+    while(true)
+    {
+        //Logging all types of messages
+        for(size_t i = 0; i < QUANTITY_OF_MSG_TYPES; ++i)
+        {
+            Logger::MSG_TYPE* arg = new Logger::MSG_TYPE;
+            *arg = static_cast<Logger::MSG_TYPE>(i);
+            if(pthread_create(&tids[i], nullptr, logFromThread, static_cast<void*>(arg)))
+                delete arg;
+        }
+        //Sleep of main thread before generating new logs
+        usleep(getRandomNumber(1000, 999999));
+    }
+    //--------------------------------
+}
