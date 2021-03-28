@@ -6,8 +6,7 @@
 #include <ctime>    //for time()
 
 #include "logger.h"
-
-Logger log;
+#include "error_handle.h"
 
 //-----Func prototypes-----
 void* logFromThread(void* arg);
@@ -51,7 +50,7 @@ void* logFromThread(void* arg)
 {
     Logger::MSG_TYPE* messageType = static_cast<Logger::MSG_TYPE*>(arg);
     std::string message = "Thread " + std::to_string(static_cast<int>(*messageType)) + " writing into log\n";
-    log.printLog(*messageType, message);
+    Logger::getInstance()->printLog(*messageType, message);
     delete messageType;
 }
 //----------------------------------------------------------------------------------------------
