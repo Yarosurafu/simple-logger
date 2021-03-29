@@ -4,13 +4,18 @@
 #include <iostream>
 #include <fcntl.h>  //for O_* constants
 #include <unistd.h> //for getpid()
+#include <pthread.h>
 
 Logger* Logger::_loggerInstance = nullptr;
 
 Logger* Logger::getInstance()
 {
+    static pthread_mutex_t mutexForInit = PTHREAD_MUTEX_INITIALIZER;
+
+    pthread_mutex_lock(&mutexForInit);
     if(_loggerInstance == nullptr)
         _loggerInstance = new Logger;
+    pthread_mutex_unlock(&mutexForInit);
 
     return _loggerInstance;
 }
