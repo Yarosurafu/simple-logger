@@ -1,3 +1,5 @@
+#ifndef LOGGER_H
+#define LOGGER_H
 #include <semaphore.h>
 #include <string>
 
@@ -33,3 +35,4 @@ private:
     sem_t* _semaphore = nullptr;
     const char* _semaphoreName = "/logSemaphore";  //name of semaphore
 };
+#endif
