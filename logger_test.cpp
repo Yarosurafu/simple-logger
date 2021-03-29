@@ -9,7 +9,12 @@ protected:
     SemaphoreFuncsMock semaphoreMock;
 };
 
-TEST_F(LoggerTest, WaitSemaphoreTest)
+TEST_F(LoggerTest, GetInstanceTest)
+{
+    EXPECT_NE(Logger::getInstance(), nullptr);
+}
+
+TEST_F(LoggerTest, SemaphoreControlTest)
 {
     using ::testing::_;
     using ::testing::Return;
@@ -17,6 +22,10 @@ TEST_F(LoggerTest, WaitSemaphoreTest)
     EXPECT_CALL(semaphoreMock, sem_wait(_))
         .Times(1)
         .WillOnce(Return(0));
+
+    EXPECT_CALL(semaphoreMock, sem_post(_))
+        .Times(1)
+        .WillOnce(Return(1));
 
     Logger::getInstance()->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
 }
