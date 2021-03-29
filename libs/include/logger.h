@@ -21,16 +21,15 @@ public:
     ~Logger();
 
 private:
-    static Logger* _loggerInstance;
-    sem_t* _semaphore = nullptr;
-    const char* _semName = "/logSemaphore";  //name of semaphore
-
-private:
-
     /**
      * Converts MSG_TYPE to std::string
      * for logging
     */
     std::string _typeToStr(MSG_TYPE msgType);
     Logger();
+
+private:
+    static Logger* _loggerInstance;
+    sem_t* _semaphore = nullptr;
+    const char* _semaphoreName = "/logSemaphore";  //name of semaphore
 };

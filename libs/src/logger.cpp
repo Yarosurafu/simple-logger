@@ -10,12 +10,12 @@ Logger* Logger::_loggerInstance = nullptr;
 
 Logger* Logger::getInstance()
 {
-    static pthread_mutex_t mutexForInit = PTHREAD_MUTEX_INITIALIZER;
+    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    pthread_mutex_lock(&mutexForInit);
+    pthread_mutex_lock(&mutex);
     if(_loggerInstance == nullptr)
         _loggerInstance = new Logger;
-    pthread_mutex_unlock(&mutexForInit);
+    pthread_mutex_unlock(&mutex);
 
     return _loggerInstance;
 }
@@ -52,7 +52,7 @@ Logger::Logger()
 {
     const mode_t permissions = 0666;
     const short semaphoreStartValue = 1;
-    _semaphore = sem_open(_semName, O_CREAT, permissions, semaphoreStartValue);
+    _semaphore = sem_open(_semaphoreName, O_CREAT, permissions, semaphoreStartValue);
     if(_semaphore == SEM_FAILED)
         exitErr("sem_open failed");
 }
@@ -73,7 +73,7 @@ void Logger::printLog(MSG_TYPE msgType, const std::string& message)
     std::cout << "PROCESS ID -->" << getpid() << std::endl;
     std::cout << "THREAD ID -->" << pthread_self() << std::endl;
     std::cout << message;
-    std::cout << "####################\n\n\n";
+    std::cout << "####################" << std::endl << std::endl << std::endl;
     sem_post(_semaphore);
 }
 //--------------------------------------------------
@@ -85,6 +85,7 @@ void Logger::printLog(MSG_TYPE msgType, const std::string& message)
 Logger::~Logger()
 {
     sem_close(_semaphore);
-    sem_unlink(_semName);
+    sem_unlink(_semaphoreName);
+    std::cout << "-->Destructor was called..." << std::endl;
 }
 //--------------------------------------------------
