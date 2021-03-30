@@ -7,6 +7,8 @@
 
 using sem_operate_t = int(*)(sem_t*);
 using sem_unlink_t = int(*)(const char*);
+using strerror_t = char*(*)(int);
+using exit_t = void(*)(int);
 
 class SemaphoreFuncsMock
 {
@@ -18,7 +20,6 @@ public:
     MOCK_METHOD(int, sem_post, (sem_t* sem));
     MOCK_METHOD(int, sem_close, (sem_t* sem));
     MOCK_METHOD(int, sem_unlink, (const char* name));
-
 };
 
 #endif

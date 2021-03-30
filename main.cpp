@@ -22,7 +22,8 @@ int main()
     {
         case -1:
         {
-            exitErr("fork()");
+            Agent agent;
+            exitErr("fork()", agent);
         }
         break;
 
@@ -73,7 +74,8 @@ void* logFromThread(void* arg)
 {
     Logger::MSG_TYPE* messageType = static_cast<Logger::MSG_TYPE*>(arg);
     std::string message = "Thread " + std::to_string(static_cast<int>(*messageType)) + " writing into log\n";
-    Logger::getInstance()->printLog(*messageType, message);
+    Agent agent;
+    Logger::getInstance(agent)->printLog(*messageType, message);
     delete messageType;
 }
 //----------------------------------------------------------------------------------------------

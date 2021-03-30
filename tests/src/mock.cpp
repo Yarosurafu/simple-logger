@@ -39,7 +39,6 @@ SemaphoreFuncsMock::SemaphoreFuncsMock()
 }
 //--------------------------------------------------------
 
-//TODO: write real function addresses
 SemaphoreFuncsMock::~SemaphoreFuncsMock()
 {
     g_sem_wait = _sem_wait;

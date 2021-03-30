@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5.1)
 
+project("Simple-logger")
+
+
+
 add_library(mock_lib STATIC mock.cpp)
-#TODO: check macros for current project directory
-target_include_directories(mock_lib PUBLIC "../include")
+target_include_directories(mock_lib PUBLIC "${CMAKE_SOURCE_DIR}/tests/include")

@@ -8,14 +8,14 @@
 
 Logger* Logger::_loggerInstance = nullptr;
 
-Logger* Logger::getInstance()
+Logger* Logger::getInstance(Agent& agent)
 {
     static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    pthread_mutex_lock(&mutex);
+    agent.a_pthread_mutex_lock(&mutex);
     if(_loggerInstance == nullptr)
-        _loggerInstance = new Logger;
-    pthread_mutex_unlock(&mutex);
+        _loggerInstance = new Logger(agent);
+    agent.a_pthread_mutex_unlock(&mutex);
 
     return _loggerInstance;
 }
@@ -48,13 +48,13 @@ std::string Logger::_typeToStr(MSG_TYPE msgType)
  * Constructor of RAII-class for POSIX-sem.
  * Opens semaphore
  */
-Logger::Logger()
+Logger::Logger(Agent& agent)
 {
     const mode_t permissions = 0666;
     const short semaphoreStartValue = 1;
-    _semaphore = sem_open(_semaphoreName, O_CREAT, permissions, semaphoreStartValue);
+    _semaphore = agent.a_sem_open(_semaphoreName, O_CREAT, permissions, semaphoreStartValue);
     if(_semaphore == SEM_FAILED)
-        exitErr("sem_open failed");
+        exitErr("sem_open failed", agent);
 }
 //--------------------------------------------------
 
@@ -81,6 +81,7 @@ void Logger::printLog(MSG_TYPE msgType, const std::string& message)
 void Logger::deleteInstance()
 {
     delete _loggerInstance;
+    _loggerInstance = nullptr;
 }
 
 //--------------------------------------------------

@@ -2,6 +2,7 @@
 #define LOGGER_H
 #include <semaphore.h>
 #include <string>
+#include <agent.h>
 
 //RAII-class for sem manipulating
 //and logging
@@ -18,7 +19,7 @@ public:
     };
 
 public:
-    static Logger* getInstance();
+    static Logger* getInstance(Agent& agent);
     void printLog(MSG_TYPE msgType, const std::string& message);
     static void deleteInstance();
     ~Logger();
@@ -29,7 +30,7 @@ private:
      * for logging
     */
     std::string _typeToStr(MSG_TYPE msgType);
-    Logger();
+    Logger(Agent& agent);
 
 private:
     static Logger* _loggerInstance;

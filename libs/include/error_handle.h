@@ -2,5 +2,7 @@
 #define ERROR_HANDLE_H
 #include <string>
 
-void exitErr(const std::string& cause);
+#include "agent.h"
+
+void exitErr(const std::string& cause, Agent& agent);
 #endif

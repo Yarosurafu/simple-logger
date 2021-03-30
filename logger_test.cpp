@@ -2,22 +2,45 @@
 
 #include "logger.h"
 #include "mock.h"
+#include "error_handle.h"
+#include "agentmock.h"
 
 //--------------------------------------------------------
 class LoggerTest : public ::testing::Test
 {
 protected:
     SemaphoreFuncsMock semaphoreMock;
+    AgentMock agentMock;
 };
 //--------------------------------------------------------
 
-//--------------------------------------------------------
-//Test return result of Logger::getInstance
-TEST_F(LoggerTest, GetInstanceTest)
+TEST_F(LoggerTest, SuccessGetInstanceTest)
 {
-    EXPECT_NE(Logger::getInstance(), nullptr);
+    using ::testing::_;
+    using ::testing::AtLeast;
+    using ::testing::ReturnNull;
+    using ::testing::Invoke;
+
+    EXPECT_CALL(agentMock, a_pthread_mutex_lock(_))
+        .Times(AtLeast(1))
+        .WillOnce(Invoke(pthread_mutex_lock));
+
+    EXPECT_CALL(agentMock, a_pthread_mutex_unlock(_))
+        .Times(AtLeast(1))
+        .WillOnce(Invoke(pthread_mutex_unlock));
+
+    EXPECT_CALL(agentMock, a_sem_open(_, _, _, _))
+        .Times(AtLeast(1))
+        .WillOnce(Invoke(sem_open));
+
+    EXPECT_CALL(agentMock, a_strerror(_))
+        .Times(0);
+
+    EXPECT_CALL(agentMock, a_exit(_))
+        .Times(0);
+
+    Logger::getInstance(agentMock);
 }
-//--------------------------------------------------------
 
 //--------------------------------------------------------
 //Test semaphore management of printlog()
@@ -40,8 +63,8 @@ TEST_F(LoggerTest, SemaphoreControlTest)
             .Times(1)
             .WillOnce(Return(1));
     }
-
-    Logger::getInstance()->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
+    Agent agent;
+    Logger::getInstance(agent)->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
 }
 //--------------------------------------------------------
 
@@ -70,10 +93,32 @@ TEST_F(LoggerTest, SemaphoreCloseTest)
 }
 //--------------------------------------------------------
 
-TEST(LoggerSuit, TestSemCalls)
+//--------------------------------------------------------
+TEST_F(LoggerTest, FailGetInstanceTest)
 {
-    Logger::getInstance()->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
+    using ::testing::_;
+    using ::testing::AtLeast;
+    using ::testing::ReturnNull;
+
+    EXPECT_CALL(agentMock, a_pthread_mutex_lock(_))
+        .Times(AtLeast(1));
+
+    EXPECT_CALL(agentMock, a_pthread_mutex_unlock(_))
+        .Times(AtLeast(1));
+
+    EXPECT_CALL(agentMock, a_sem_open(_, _, _, _))
+        .Times(AtLeast(1))
+        .WillOnce(ReturnNull());
+
+    EXPECT_CALL(agentMock, a_strerror(_))
+        .Times(AtLeast(1));
+
+    EXPECT_CALL(agentMock, a_exit(_))
+        .Times(AtLeast(1));
+
+    Logger::getInstance(agentMock);
 }
+//--------------------------------------------------------
 
 int main(int argc, char** argv)
 {
