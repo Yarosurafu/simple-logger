@@ -2,11 +2,14 @@
 
 #include <functional>
 
+//----------Containers for lambdas with mock calls----------
 static std::function<int(sem_t*)> _sem_wait;
 static std::function<int(sem_t*)> _sem_post;
 static std::function<int(sem_t*)> _sem_close;
 static std::function<int(const char*)> _sem_unlink;
+//--------------------------------------------------------
 
+//--------------------------------------------------------
 SemaphoreFuncsMock::SemaphoreFuncsMock()
 {
     _sem_wait = [this](sem_t* sem)
@@ -27,6 +30,7 @@ SemaphoreFuncsMock::SemaphoreFuncsMock()
                     return sem_unlink(name);
                 };
 }
+//--------------------------------------------------------
 
 SemaphoreFuncsMock::~SemaphoreFuncsMock()
 {
@@ -36,6 +40,8 @@ SemaphoreFuncsMock::~SemaphoreFuncsMock()
     _sem_unlink = {};
 }
 
+//--------------------------------------------------------
+//Redefinition of real functions
 extern "C"
 {
     int sem_wait(sem_t* sem)
@@ -58,3 +64,4 @@ extern "C"
         return _sem_unlink(name);
     }
 }
+//--------------------------------------------------------
