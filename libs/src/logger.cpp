@@ -78,6 +78,11 @@ void Logger::printLog(MSG_TYPE msgType, const std::string& message)
 }
 //--------------------------------------------------
 
+void Logger::deleteInstance()
+{
+    delete _loggerInstance;
+}
+
 //--------------------------------------------------
 /**
  * Destructor of RAII-class for POSIX-sem.

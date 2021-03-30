@@ -17,7 +17,7 @@ add_subdirectory(tests)
 
 add_executable(logger-test logger_test.cpp)
 
-target_link_libraries(logger-test logger_lib error_handle_lib mock_lib -lgtest -lgtest_main -pthread -lgmock)
+target_link_libraries(logger-test logger_lib error_handle_lib mock_lib -lgtest -lgtest_main -lgmock -pthread)
 
 target_include_directories(logger-test PUBLIC 
                             "libs/include"                        

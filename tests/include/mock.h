@@ -12,6 +12,8 @@ public:
 
     MOCK_METHOD(int, sem_wait, (sem_t* sem));
     MOCK_METHOD(int, sem_post, (sem_t* sem));
+    MOCK_METHOD(int, sem_close, (sem_t* sem));
+    MOCK_METHOD(int, sem_unlink, (const char* name));
 };
 
 #endif

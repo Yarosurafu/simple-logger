@@ -20,6 +20,7 @@ public:
 public:
     static Logger* getInstance();
     void printLog(MSG_TYPE msgType, const std::string& message);
+    static void deleteInstance();
     ~Logger();
 
 private:

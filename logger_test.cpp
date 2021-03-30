@@ -30,6 +30,22 @@ TEST_F(LoggerTest, SemaphoreControlTest)
     Logger::getInstance()->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
 }
 
+TEST_F(LoggerTest, SemaphoreCloseTest)
+{
+    using ::testing::_;
+    using ::testing::Return;
+
+    EXPECT_CALL(semaphoreMock, sem_close(_))
+        .Times(1)
+        .WillOnce(Return(0));
+
+    EXPECT_CALL(semaphoreMock, sem_unlink(_))
+        .Times(1)
+        .WillOnce(Return(0));
+
+    Logger::deleteInstance();
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
