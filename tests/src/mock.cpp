@@ -2,6 +2,11 @@
 
 #include <functional>
 
+sem_operate_t _sem_wait = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_wait"));
+sem_operate_t _sem_post = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_post"));
+sem_operate_t _sem_close = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_close"));
+sem_unlink_t _sem_unlink = reinterpret_cast<sem_unlink_t>(dlsym(RTLD_NEXT, "sem_unlink"));
+
 //----------Containers for lambdas with mock calls----------
 static std::function<int(sem_t*)> g_sem_wait = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_wait"));
 static std::function<int(sem_t*)> g_sem_post = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_post"));
