@@ -3,41 +3,44 @@
 #include <functional>
 
 //----------Containers for lambdas with mock calls----------
-static std::function<int(sem_t*)> _sem_wait;
-static std::function<int(sem_t*)> _sem_post;
-static std::function<int(sem_t*)> _sem_close;
-static std::function<int(const char*)> _sem_unlink;
+static std::function<int(sem_t*)> g_sem_wait = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_wait"));
+static std::function<int(sem_t*)> g_sem_post = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_post"));
+static std::function<int(sem_t*)> g_sem_close = reinterpret_cast<sem_operate_t>(dlsym(RTLD_NEXT, "sem_close"));
+static std::function<int(const char*)> g_sem_unlink = reinterpret_cast<sem_unlink_t>(dlsym(RTLD_NEXT, "sem_unlink"));
 //--------------------------------------------------------
 
 //--------------------------------------------------------
 SemaphoreFuncsMock::SemaphoreFuncsMock()
 {
-    _sem_wait = [this](sem_t* sem)
+    g_sem_wait = [this](sem_t* sem)
                 {
                     return sem_wait(sem);
                 };
 
-    _sem_post = [this](sem_t* sem)
+    g_sem_post = [this](sem_t* sem)
                 {
                     return sem_post(sem);
                 };
-    _sem_close = [this](sem_t* sem)
+
+    g_sem_close = [this](sem_t* sem)
                 {
                     return sem_close(sem);
                 };
-    _sem_unlink = [this](const char* name)
+
+    g_sem_unlink = [this](const char* name)
                 {
                     return sem_unlink(name);
                 };
 }
 //--------------------------------------------------------
 
+//TODO: write real function addresses
 SemaphoreFuncsMock::~SemaphoreFuncsMock()
 {
-    _sem_wait = {};
-    _sem_post = {};
-    _sem_close = {};
-    _sem_unlink = {};
+    g_sem_wait = _sem_wait;
+    g_sem_post = _sem_post;
+    g_sem_close = _sem_close;
+    g_sem_unlink = _sem_unlink;
 }
 
 //--------------------------------------------------------
@@ -46,22 +49,22 @@ extern "C"
 {
     int sem_wait(sem_t* sem)
     {
-        return _sem_wait(sem);
+        return g_sem_wait(sem);
     }
 
     int sem_post(sem_t* sem)
     {
-        return _sem_post(sem);
+        return g_sem_post(sem);
     }
 
     int sem_close(sem_t* sem)
     {
-        return _sem_close(sem);
+        return g_sem_close(sem);
     }
 
     int sem_unlink(const char* name)
     {
-        return _sem_unlink(name);
+        return g_sem_unlink(name);
     }
 }
 //--------------------------------------------------------

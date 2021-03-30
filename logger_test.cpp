@@ -70,6 +70,11 @@ TEST_F(LoggerTest, SemaphoreCloseTest)
 }
 //--------------------------------------------------------
 
+TEST(LoggerSuit, TestSemCalls)
+{
+    Logger::getInstance()->printLog(Logger::MSG_TYPE::MSG_INFO, "msg");
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
