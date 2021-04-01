@@ -25,12 +25,13 @@ public:
     ~Logger();
 
 private:
+    Logger(Agent& agent);
+    
     /**
      * Converts MSG_TYPE to std::string
      * for logging
     */
     std::string _typeToStr(MSG_TYPE msgType);
-    Logger(Agent& agent);
 
 private:
     static Logger* _loggerInstance;

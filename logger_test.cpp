@@ -22,15 +22,16 @@ TEST_F(LoggerTest, SuccessGetInstanceTest)
     using ::testing::Invoke;
 
     EXPECT_CALL(agentMock, a_pthread_mutex_lock(_))
-        .Times(AtLeast(1))
+        .Times(1)
         .WillOnce(Invoke(pthread_mutex_lock));
 
     EXPECT_CALL(agentMock, a_pthread_mutex_unlock(_))
-        .Times(AtLeast(1))
+        .Times(1)
         .WillOnce(Invoke(pthread_mutex_unlock));
 
+    //TODO: rewrite arguments9999
     EXPECT_CALL(agentMock, a_sem_open(_, _, _, _))
-        .Times(AtLeast(1))
+        .Times(1)
         .WillOnce(Invoke(sem_open));
 
     EXPECT_CALL(agentMock, a_strerror(_))
@@ -39,7 +40,7 @@ TEST_F(LoggerTest, SuccessGetInstanceTest)
     EXPECT_CALL(agentMock, a_exit(_))
         .Times(0);
 
-    Logger::getInstance(agentMock);
+    ASSERT_NE(Logger::getInstance(agentMock), nullptr);
 }
 
 //--------------------------------------------------------
@@ -94,6 +95,7 @@ TEST_F(LoggerTest, SemaphoreCloseTest)
 //--------------------------------------------------------
 
 //--------------------------------------------------------
+//FailGetInstanceTest must be called after SemaphoreCloseTest
 TEST_F(LoggerTest, FailGetInstanceTest)
 {
     using ::testing::_;
@@ -101,20 +103,20 @@ TEST_F(LoggerTest, FailGetInstanceTest)
     using ::testing::ReturnNull;
 
     EXPECT_CALL(agentMock, a_pthread_mutex_lock(_))
-        .Times(AtLeast(1));
+        .Times(1);
 
     EXPECT_CALL(agentMock, a_pthread_mutex_unlock(_))
-        .Times(AtLeast(1));
+        .Times(1);
 
     EXPECT_CALL(agentMock, a_sem_open(_, _, _, _))
-        .Times(AtLeast(1))
+        .Times(1)
         .WillOnce(ReturnNull());
 
     EXPECT_CALL(agentMock, a_strerror(_))
-        .Times(AtLeast(1));
+        .Times(1);
 
     EXPECT_CALL(agentMock, a_exit(_))
-        .Times(AtLeast(1));
+        .Times(1);
 
     Logger::getInstance(agentMock);
 }
