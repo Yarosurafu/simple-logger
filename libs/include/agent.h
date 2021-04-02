@@ -8,8 +8,12 @@
 class Agent
 {
 public:
+    bool retNull = false;
+
+    void setSemOpenRetNull(bool val) { retNull = val; }
+
     virtual sem_t* a_sem_open(const char *name, int oflag,
-                       mode_t mode, unsigned int value){ return sem_open(name, oflag, mode, value); }
+                       mode_t mode, unsigned int value){ return (retNull) ? SEM_FAILED : sem_open(name, oflag, mode, value); }
 
     virtual char* a_strerror(int errnum){ return strerror(errnum); }
 
